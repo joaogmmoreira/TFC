@@ -1,9 +1,8 @@
 import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
 import userModel from '../database/models/UserModel';
 import IUser from '../interfaces/IUser';
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
+import generateToken from '../auth/generateToken';
+import validateToken from '../auth/validateToken';
 
 export default class UserService {
   private userModel = userModel;
@@ -25,13 +24,14 @@ export default class UserService {
       return { type: 401, message: 'Incorrect email or password' };
     }
 
-    const userToken = jwt.sign(
-      { userId: data.id },
-      JWT_SECRET,
-      { algorithm: 'HS256',
-        expiresIn: '7d' },
-    );
+    const token = generateToken(data);
 
-    return { type: null, message: userToken };
+    return { type: null, message: token };
+  };
+
+  validateLogin = (authorization: string) => {
+    const { role } = validateToken(authorization);
+
+    return { type: 200, message: role };
   };
 }

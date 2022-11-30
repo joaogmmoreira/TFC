@@ -9,7 +9,6 @@ export default class UserController {
   }
 
   userLogin = async (req: Request, res: Response) => {
-    console.log('controller');
     const { email, password } = req.body;
 
     const { type, message } = await this.service.userLogin(email, password);
@@ -19,5 +18,17 @@ export default class UserController {
     }
 
     return res.status(200).json({ token: message });
+  };
+
+  validateLogin = async (req: Request, res: Response) => {
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+      return res.status(401).json({ message: 'Token not found' });
+    }
+
+    const { type, message } = await this.service.validateLogin(authorization);
+
+    return res.status(type).json({ role: message });
   };
 }
