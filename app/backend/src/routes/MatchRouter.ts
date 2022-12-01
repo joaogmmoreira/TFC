@@ -8,8 +8,4 @@ matchRouter.get('/', (req, res) => {
   matchController.allMatches(req, res);
 });
 
-// teamRouter.get('/:id', (req, res) => {
-//   teamController.oneTeam(req, res);
-// });
-
 export default matchRouter;

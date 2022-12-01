@@ -18,4 +18,10 @@ export default class MatchService {
     });
     return data;
   };
+
+  inProgressMatches = async (inProgress: boolean) => {
+    const data = await this.allMatches();
+    const matches = data.filter((element) => element.inProgress === inProgress);
+    return matches;
+  };
 }
