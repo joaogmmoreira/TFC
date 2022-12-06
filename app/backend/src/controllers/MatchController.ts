@@ -33,6 +33,10 @@ export default class MatchController {
     if (!type) {
       return res.status(201).json(message);
     }
+
+    return res.status(type).json({ message });
+
+    // Cannot set headers after they are sent to the client
   };
 
   finishMatch = async (req: Request, res: Response) => {

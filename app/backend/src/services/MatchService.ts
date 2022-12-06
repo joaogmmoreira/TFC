@@ -28,6 +28,18 @@ export default class MatchService {
 
   insertMatch = async (match: IMatch) => {
     const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = match;
+
+    const hTeam = await this.matchModel.findOne({ where: { homeTeam } });
+    const aTeam = await this.matchModel.findOne({ where: { awayTeam } });
+
+    if (!hTeam || !aTeam) {
+      return { type: 404, message: 'There is no team with such id!' };
+    }
+
+    if (homeTeam === awayTeam) {
+      return { type: 422, message: 'It is not possible to create a match with two equal teams' };
+    }
+
     const result = await this.matchModel.create({
       homeTeam,
       awayTeam,

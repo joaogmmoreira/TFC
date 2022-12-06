@@ -8,5 +8,9 @@ export default (res: Response, authorization: string | undefined) => {
     return res.status(400).json('Token not found');
   }
 
-  verify(authorization, JWT_SECRET);
+  try {
+    verify(authorization, JWT_SECRET);
+  } catch (error) {
+    return res.status(401).json({ message: 'Token must be a valid token' });
+  }
 };
