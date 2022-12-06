@@ -8,4 +8,12 @@ matchRouter.get('/', (req, res) => {
   matchController.allMatches(req, res);
 });
 
+matchRouter.post('/', (req, res) => {
+  matchController.insertMatch(req, res);
+});
+
+matchRouter.patch('/:id/finish', (req, res) => {
+  matchController.finishMatch(req, res);
+});
+
 export default matchRouter;
