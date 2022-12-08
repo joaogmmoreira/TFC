@@ -57,4 +57,12 @@ export default class MatchService {
 
     return { type: null, message: 'Finished' };
   };
+
+  updateMatch = async (id: string, homeTeamGoals: string, awayTeamGoals: string) => {
+    const match = await this.matchModel.findOne({ where: { id } });
+
+    await match?.update({ homeTeamGoals, awayTeamGoals });
+
+    return { type: null, message: 'Updated succesfully' };
+  };
 }
