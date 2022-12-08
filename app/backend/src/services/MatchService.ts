@@ -63,6 +63,6 @@ export default class MatchService {
 
     await match?.update({ homeTeamGoals, awayTeamGoals });
 
-    return { type: null, message: 'Updated succesfully' };
+    return { type: null, message: 'Update done' };
   };
 }
