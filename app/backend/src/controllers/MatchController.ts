@@ -58,5 +58,7 @@ export default class MatchController {
     if (!type) {
       return res.status(200).json({ message });
     }
+
+    return res.status(400).json({ message: 'Match not updated' });
   };
 }
