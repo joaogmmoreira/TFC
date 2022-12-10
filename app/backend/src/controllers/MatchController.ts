@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import verifyToken from '../auth/verifyToken';
 import MatchService from '../services/MatchService';
 
 export default class MatchController {
@@ -23,9 +22,6 @@ export default class MatchController {
   };
 
   insertMatch = async (req: Request, res: Response) => {
-    const { authorization } = req.headers;
-    verifyToken(res, authorization);
-
     const data = req.body;
 
     const { type, message } = await this.service.insertMatch(data);

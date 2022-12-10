@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import MatchController from '../controllers/MatchController';
+import verifyToken from '../auth/verifyToken';
 
 const matchRouter = Router();
 const matchController = new MatchController();
@@ -9,6 +10,8 @@ matchRouter.get('/', (req, res) => {
 });
 
 matchRouter.post('/', (req, res) => {
+  verifyToken(req, res);
+}, (req, res) => {
   matchController.insertMatch(req, res);
 });
 

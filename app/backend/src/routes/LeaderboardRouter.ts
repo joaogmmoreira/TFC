@@ -8,4 +8,8 @@ leaderboardRouter.get('/home', (req, res) => {
   leaderboardController.homeTeamsLeaderboard(req, res);
 });
 
+leaderboardRouter.get('/away', (req, res) => {
+  leaderboardController.homeTeamsLeaderboard(req, res);
+});
+
 export default leaderboardRouter;
