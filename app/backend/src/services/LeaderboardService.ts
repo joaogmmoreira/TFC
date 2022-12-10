@@ -1,6 +1,5 @@
 import MatchModel from '../database/models/MatchModel';
 import TeamModel from '../database/models/TeamModel';
-// import IMatchesPerTeam from '../interfaces/IMatchesPerTeam';
 
 export default class MatchService {
   private matchModel = MatchModel;
@@ -22,30 +21,33 @@ export default class MatchService {
     return points;
   };
 
-  matchesPerTeam = (teams: any, matches: any) => {
+  matchesPerTeam = (teams: any, matches: any, homeOrAway: string) => {
     const result = teams.map((team: any) => {
       const teamId = team.dataValues.id;
       const { teamName } = team.dataValues;
-      const obj = {
-        teamId,
+      if (homeOrAway === 'home') {
+        const obj = { teamId,
+          teamName,
+          matches: matches.filter((element: any) => element
+            .dataValues.homeTeam === team.dataValues.id) };
+        return obj;
+      }
+      const obj = { teamId,
         teamName,
         matches: matches.filter((element: any) => element
-          .dataValues.homeTeam === team.dataValues.id),
-      };
+          .dataValues.awayTeam === team.dataValues.id) };
       return obj;
     });
     return result;
   };
 
-  teamsResults = (matchesPerTeam: any) => {
+  teamsResults = (matchesPerTeam: any, homeOrAway: string) => {
     const result = matchesPerTeam.map((element: any) => {
       const resultArr = element.matches.map((element2: any) => {
-        if (element2.homeTeamGoals > element2.awayTeamGoals) {
-          return 'win';
-        }
-        if (element2.homeTeamGoals < element2.awayTeamGoals) {
-          return 'loss';
-        }
+        if (element2.homeTeamGoals > element2.awayTeamGoals && homeOrAway === 'home') return 'win';
+        if (element2.homeTeamGoals < element2.awayTeamGoals && homeOrAway === 'home') return 'loss';
+        if (element2.homeTeamGoals > element2.awayTeamGoals && homeOrAway === 'away') return 'loss';
+        if (element2.homeTeamGoals < element2.awayTeamGoals && homeOrAway === 'away') return 'win';
         return 'draw';
       });
       return resultArr;
@@ -66,7 +68,6 @@ export default class MatchService {
 
       if (element === 'loss') resultsObj.losses += 1;
     });
-    // const victoriesCount = results.reduce((acc: number, cal: number) => acc + cal, 0);
     return resultsObj;
   };
 
@@ -123,13 +124,13 @@ export default class MatchService {
     return orderedLeaderboard;
   };
 
-  homeTeamsLeaderboard = async () => {
+  teamsLeaderboard = async (homeOrAway: string) => {
     const matches = await this.matchModel.findAll({ where: { inProgress: false } });
     const teams = await this.teamModel.findAll();
 
-    const matchesPerTeam = this.matchesPerTeam(teams, matches);
+    const matchesPerTeam = this.matchesPerTeam(teams, matches, homeOrAway);
 
-    const teamsResults = this.teamsResults(matchesPerTeam);
+    const teamsResults = this.teamsResults(matchesPerTeam, homeOrAway);
 
     const points = this.totalPoints(matchesPerTeam);
 

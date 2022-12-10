@@ -12,18 +12,18 @@ export default class LeaderboardController {
     const { url } = req;
 
     if (url === '/home') {
-      const { type, message } = await this.service.homeTeamsLeaderboard();
+      const { type, message } = await this.service.teamsLeaderboard('home');
       if (!type) {
         return res.status(200).json(message);
       }
       return res.status(type).json({ message });
     }
 
-    // const { type, message } = await this.service.awayTeamsLeaderboard();
+    const { type, message } = await this.service.teamsLeaderboard('away');
 
-    // if (!type) {
-    //   return res.status(200).json(message);
-    // }
-    // return res.status(type).json({ message });
+    if (!type) {
+      return res.status(200).json(message);
+    }
+    return res.status(type).json({ message });
   };
 }
