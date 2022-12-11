@@ -9,11 +9,15 @@ matchRouter.get('/', (req, res) => {
   matchController.allMatches(req, res);
 });
 
-matchRouter.post('/', (req, res) => {
-  verifyToken(req, res);
+matchRouter.post('/', (req, res, next) => {
+  verifyToken(req, res, next);
 }, (req, res) => {
   matchController.insertMatch(req, res);
 });
+
+// matchRouter.post('/', (req, res) => {
+//   matchController.insertMatch(req, res);
+// });
 
 matchRouter.patch('/:id/finish', (req, res) => {
   matchController.finishMatch(req, res);

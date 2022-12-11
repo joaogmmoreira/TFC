@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export default (req: Request, res: Response) => {
+export default (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization as string;
 
   if (!token) {
@@ -15,4 +15,6 @@ export default (req: Request, res: Response) => {
   } catch (error) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
+
+  next();
 };
