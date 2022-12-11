@@ -5,15 +5,13 @@ export default class MatchService {
   private matchModel = MatchModel;
   private teamModel = TeamModel;
 
-  totalPoints = (matchesPerTeam: any) => {
+  totalPoints = (matchesPerTeam: any, homeOrAway: string) => {
     const points = matchesPerTeam.map((element: any) => {
       const pointsArr = element.matches.map((element2: any) => {
-        if (element2.homeTeamGoals > element2.awayTeamGoals) {
-          return 3;
-        }
-        if (element2.homeTeamGoals < element2.awayTeamGoals) {
-          return 0;
-        }
+        if (element2.homeTeamGoals > element2.awayTeamGoals && homeOrAway === 'home') return 3;
+        if (element2.homeTeamGoals < element2.awayTeamGoals && homeOrAway === 'home') return 0;
+        if (element2.homeTeamGoals > element2.awayTeamGoals && homeOrAway === 'away') return 0;
+        if (element2.homeTeamGoals < element2.awayTeamGoals && homeOrAway === 'away') return 3;
         return 1;
       });
       return pointsArr;
@@ -64,24 +62,31 @@ export default class MatchService {
     teamsResults[index].forEach((element: any) => {
       if (element === 'win') resultsObj.wins += 1;
 
-      if (element === 'draw') resultsObj.draws += 1;
-
       if (element === 'loss') resultsObj.losses += 1;
+
+      // if (element === 'win' && homeOrAway === 'away') resultsObj.losses += 1;
+
+      // if (element === 'loss' && homeOrAway === 'away') resultsObj.wins += 1;
+
+      if (element === 'draw') resultsObj.draws += 1;
     });
     return resultsObj;
   };
 
-  totalGoals = (matchesPerTeam: any, index: number) => {
-    const goalsObj = {
-      goalsFavor: 0,
-      goalsOwn: 0,
-    };
+  totalGoals = (matchesPerTeam: any, index: number, homeOrAway: string) => {
+    const goalsObj = { goalsFavor: 0, goalsOwn: 0 };
     matchesPerTeam[index].matches.forEach((element2: any) => {
-      if (element2.homeTeamGoals > 0) {
+      if (element2.homeTeamGoals > 0 && homeOrAway === 'home') {
         goalsObj.goalsFavor += element2.homeTeamGoals;
       }
-      if (element2.awayTeamGoals > 0) {
+      if (element2.awayTeamGoals > 0 && homeOrAway === 'home') {
         goalsObj.goalsOwn += element2.awayTeamGoals;
+      }
+      if (element2.homeTeamGoals > 0 && homeOrAway === 'away') {
+        goalsObj.goalsOwn += element2.homeTeamGoals;
+      }
+      if (element2.awayTeamGoals > 0 && homeOrAway === 'away') {
+        goalsObj.goalsFavor += element2.awayTeamGoals;
       }
     });
     return goalsObj;
@@ -93,10 +98,10 @@ export default class MatchService {
     return app;
   };
 
-  leaderboard = (matchesPerTeam: any, teamsResults: any, pointsSum: any) => {
+  leaderboard = (matchesPerTeam: any, teamsResults: any, pointsSum: any, homeOrAway: string) => {
     const leaderboardObj = matchesPerTeam.map((element: any, index: number) => {
       const totalResults = this.totalResults(teamsResults, index);
-      const totalGoals = this.totalGoals(matchesPerTeam, index);
+      const totalGoals = this.totalGoals(matchesPerTeam, index, homeOrAway);
       const efficiency = this.efficiency(pointsSum, element.matches.length, index);
 
       const leaderboardArr = {
@@ -132,12 +137,12 @@ export default class MatchService {
 
     const teamsResults = this.teamsResults(matchesPerTeam, homeOrAway);
 
-    const points = this.totalPoints(matchesPerTeam);
+    const points = this.totalPoints(matchesPerTeam, homeOrAway);
 
     const pointsSum = points.map((element:any) => element
       .reduce((acc: number, val: number) => acc + val, 0));
 
-    const leaderboard = this.leaderboard(matchesPerTeam, teamsResults, pointsSum);
+    const leaderboard = this.leaderboard(matchesPerTeam, teamsResults, pointsSum, homeOrAway);
 
     const sortLeaderboard = this.sortLeaderboard(leaderboard);
 
